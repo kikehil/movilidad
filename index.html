@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Movilidad – Estatus de Dispositivos</title>
+    <meta name="description"
+        content="Dashboard de estatus de dispositivos de movilidad OXXO Ciudad Valles – Tamaulipas." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- html2canvas + jsPDF for export -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+
+    <!-- ╔═══════════════════════════════════════════╗
+     ║   FORM VIEW                             ║
+     ╚═══════════════════════════════════════════╝ -->
+    <div id="form-view">
+
+        <!-- Header strip -->
+        <div class="form-bg">
+            <div class="form-logo">
+                <img src="logov.png" alt="OXXO Ciudad Valles" style="height:64px; object-fit:contain;" />
+                <img src="PNG File (transparent background).png" alt="Tamaulipas"
+                    style="height:58px; object-fit:contain;" />
+            </div>
+            <h1 class="form-headline">Estatus de Movilidad</h1>
+        </div>
+
+        <!-- 0 – Tiendas -->
+        <div class="form-section">
+            <div class="fs-header">
+                <span class="fs-num">0</span>
+                <div>
+                    <div class="fs-title">General</div>
+                    <div class="fs-desc">Número de tiendas &amp; SI de reposición</div>
+                </div>
+            </div>
+            <div class="form-grid col-2" style="padding:16px 18px; background:var(--surface2);">
+                <div class="fg">
+                    <label class="fl" for="inp-tiendas">Número de Tiendas</label>
+                    <div class="fi-wrap fi-blue">
+                        <span class="fi-prefix">#</span>
+                        <input class="fi fi-lg" id="inp-tiendas" type="number" min="0" placeholder="0" />
+                    </div>
+                </div>
+                <div class="form-grid col-2" style="padding:0; background:transparent;">
+                    <div class="fg">
+                        <label class="fl" for="inp-si-folio">Folio de SI (Reposición)</label>
+                        <div class="fi-wrap" style="border-left: 3px solid var(--brand2);">
+                            <span class="fi-prefix">#</span>
+                            <input class="fi fi-lg" id="inp-si-folio" type="text" placeholder="Ej. SI-12345"
+                                autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="fg">
+                        <label class="fl" for="inp-si-estatus">Estatus de la SI</label>
+                        <div class="fi-wrap" style="border-left: 3px solid var(--brand2); padding-left: 10px;">
+                            <select class="fi fi-lg" id="inp-si-estatus" style="cursor: pointer;">
+                                <option value="none">Seleccione estatus...</option>
+                                <option value="auth">🟡 En autorización</option>
+                                <option value="ok">🟢 Autorizada</option>
+                                <option value="wait">🔵 En espera</option>
+                                <option value="recv">🩵 Recibida</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1 – Garantías -->
+        <div class="form-section">
+            <div class="fs-header">
+                <span class="fs-num">1</span>
+                <div>
+                    <div class="fs-title">Garantías</div>
+                    <div class="fs-desc">Equipos con y sin garantía vigente</div>
+                </div>
+            </div>
+            <div class="form-grid col-3" style="padding:16px 18px; background:var(--surface2);">
+                <!-- Tablets -->
+                <div class="form-device-card">
+                    <div class="fdc-title">📱 Tablets</div>
+                    <div class="fg">
+                        <label class="fl" for="t-con">Con garantía</label>
+                        <div class="fi-wrap fi-green">
+                            <span class="fi-prefix">✓</span>
+                            <input class="fi" id="t-con" type="number" min="0" placeholder="0" />
+                        </div>
+                    </div>
+                    <div class="fg">
+                        <label class="fl" for="t-sin">Sin garantía</label>
+                        <div class="fi-wrap fi-red">
+                            <span class="fi-prefix">✕</span>
+                            <input class="fi" id="t-sin" type="number" min="0" placeholder="0" />
+                        </div>
+                    </div>
+                </div>
+                <!-- Hand Held -->
+                <div class="form-device-card">
+                    <div class="fdc-title">📟 Hand Held</div>
+                    <div class="fg">
+                        <label class="fl" for="hh-con">Con garantía</label>
+                        <div class="fi-wrap fi-green">
+                            <span class="fi-prefix">✓</span>
+                            <input class="fi" id="hh-con" type="number" min="0" placeholder="0" />
+                        </div>
+                    </div>
+                    <div class="fg">
+                        <label class="fl" for="hh-sin">Sin garantía</label>
+                        <div class="fi-wrap fi-red">
+                            <span class="fi-prefix">✕</span>
+                            <input class="fi" id="hh-sin" type="number" min="0" placeholder="0" />
+                        </div>
+                    </div>
+                </div>
+                <!-- Impresoras -->
+                <div class="form-device-card">
+                    <div class="fdc-title">🖨️ Impresoras</div>
+                    <div class="fg">
+                        <label class="fl" for="imp-con">Con garantía</label>
+                        <div class="fi-wrap fi-green">
+                            <span class="fi-prefix">✓</span>
+                            <input class="fi" id="imp-con" type="number" min="0" placeholder="0" />
+                        </div>
+                    </div>
+                    <div class="fg">
+                        <label class="fl" for="imp-sin">Sin garantía</label>
+                        <div class="fi-wrap fi-red">
+                            <span class="fi-prefix">✕</span>
+                            <input class="fi" id="imp-sin" type="number" min="0" placeholder="0" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2 – Depreciados -->
+        <div class="form-section">
+            <div class="fs-header">
+                <span class="fs-num">2</span>
+                <div>
+                    <div class="fs-title">Equipo Depreciado</div>
+                    <div class="fs-desc">Unidades que ya completaron su vida útil</div>
+                </div>
+            </div>
+            <div class="form-grid col-3" style="padding:16px 18px; background:var(--surface2);">
+                <div class="fg">
+                    <label class="fl" for="dep-hh">Hand Held depreciados</label>
+                    <div class="fi-wrap fi-orange">
+                        <span class="fi-prefix">📟</span>
+                        <input class="fi" id="dep-hh" type="number" min="0" placeholder="0" />
+                    </div>
+                </div>
+                <div class="fg">
+                    <label class="fl" for="dep-t">Tablets depreciadas</label>
+                    <div class="fi-wrap fi-orange">
+                        <span class="fi-prefix">📱</span>
+                        <input class="fi" id="dep-t" type="number" min="0" placeholder="0" />
+                    </div>
+                </div>
+                <div class="fg">
+                    <label class="fl" for="dep-imp">Impresoras depreciadas</label>
+                    <div class="fi-wrap fi-orange">
+                        <span class="fi-prefix">🖨️</span>
+                        <input class="fi" id="dep-imp" type="number" min="0" placeholder="0" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3 – Stock -->
+        <div class="form-section">
+            <div class="fs-header">
+                <span class="fs-num">3</span>
+                <div>
+                    <div class="fs-title">Stock Disponible</div>
+                    <div class="fs-desc">Unidades en almacén listas para asignar</div>
+                </div>
+            </div>
+            <div class="form-grid col-3" style="padding:16px 18px; background:var(--surface2);">
+                <div class="fg">
+                    <label class="fl" for="stk-t">Tablets en stock</label>
+                    <div class="fi-wrap fi-blue">
+                        <span class="fi-prefix">📱</span>
+                        <input class="fi" id="stk-t" type="number" min="0" placeholder="0" />
+                    </div>
+                </div>
+                <div class="fg">
+                    <label class="fl" for="stk-hh">Hand Held en stock</label>
+                    <div class="fi-wrap fi-blue">
+                        <span class="fi-prefix">📟</span>
+                        <input class="fi" id="stk-hh" type="number" min="0" placeholder="0" />
+                    </div>
+                </div>
+                <div class="fg">
+                    <label class="fl" for="stk-imp">Impresoras en stock</label>
+                    <div class="fi-wrap fi-blue">
+                        <span class="fi-prefix">🖨️</span>
+                        <input class="fi" id="stk-imp" type="number" min="0" placeholder="0" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4 – CSV -->
+        <div class="form-section">
+            <div class="fs-header">
+                <span class="fs-num">4</span>
+                <div>
+                    <div class="fs-title">Archivo de Conectividad</div>
+                    <div class="fs-desc">Grid Report exportado desde el MDM</div>
+                </div>
+            </div>
+
+            <!-- Drop zone -->
+            <div class="csv-drop-zone" id="csv-drop-zone">
+                <div id="csv-empty-state">
+                    <div class="csv-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 9.414V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <p class="csv-main-text">Arrastra el CSV aquí o haz clic para seleccionar</p>
+                    <p class="csv-sub-text">Columnas requeridas: <code>Last Seen</code> · <code>Username</code></p>
+                    <button class="btn-browse" onclick="document.getElementById('csv-file-inp').click()">Seleccionar
+                        archivo</button>
+                    <input type="file" id="csv-file-inp" accept=".csv" style="display:none" />
+                </div>
+                <div id="csv-loaded-state" style="display:none">
+                    <div class="csv-loaded-content">
+                        <span class="csv-loaded-icon">✅</span>
+                        <div>
+                            <div class="csv-file-name" id="csv-file-name-label">—</div>
+                            <div class="csv-file-rows" id="csv-file-rows-label">—</div>
+                        </div>
+                        <button class="btn-remove-csv" id="btn-remove-csv" title="Quitar archivo">✕</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column preview -->
+            <div class="csv-preview" id="csv-preview" style="display:none">
+                <div class="csv-preview-title">Columnas detectadas</div>
+                <div class="csv-columns-list" id="csv-columns-list"></div>
+                <div class="csv-warning" id="csv-warning" style="display:none"></div>
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="form-submit-area">
+            <button class="btn-generate" id="btn-generate">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Generar Dashboard
+            </button>
+        </div>
+
+    </div><!-- end #form-view -->
+
+
+    <!-- ╔═══════════════════════════════════════════╗
+     ║   DASHBOARD VIEW                        ║
+     ╚═══════════════════════════════════════════╝ -->
+    <div id="dash-view" style="display:none">
+
+        <!-- Toolbar (no se exporta) -->
+        <div class="dash-toolbar no-export">
+            <button class="btn-back" id="btn-back">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Volver al formulario
+            </button>
+            <span class="toolbar-title">Dashboard Movilidad – OXXO Ciudad Valles</span>
+            <div class="toolbar-actions">
+                <button class="btn-exp btn-jpg" id="btn-export-jpg">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Exportar JPG
+                </button>
+                <button class="btn-exp btn-pdf" id="btn-export-pdf">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 9.414V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Exportar PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Exportable page -->
+        <div class="dashboard-page" id="dashboard-page">
+
+            <!-- Header -->
+            <div class="dp-header">
+                <div class="dp-header-left">
+                    <div class="dp-brand-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="dp-brand-name">Dashboard Movilidad</div>
+                        <div class="dp-report-label">OXXO Ciudad Valles – Plaza CD. Valles</div>
+                    </div>
+                    <!-- Logos -->
+                    <img src="logov.png" alt="OXXO" style="height:54px; object-fit:contain; margin-left:20px;" />
+                    <img src="PNG File (transparent background).png" alt="Tamaulipas"
+                        style="height:50px; object-fit:contain; margin-left:14px;" />
+                </div>
+                <div class="dp-header-right">
+                    <div class="dp-header-stores">
+                        <span class="dp-stores-num" id="dp-stores-n">—</span>
+                        <span class="dp-stores-label">Tiendas</span>
+                    </div>
+                    <div class="dp-header-date">
+                        <div class="dp-date-label">Generado</div>
+                        <div class="dp-date-val" id="dp-gen-date">—</div>
+                        <div class="dp-date-label" style="margin-top:4px;">Datos CSV</div>
+                        <div class="dp-date-val" id="dp-csv-date">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── KPI ROW ── -->
+            <div class="dp-kpi-section">
+                <div class="dp-section-label">Inventario &amp; Garantías</div>
+                <div class="dp-kpi-row">
+
+                    <!-- Tablets -->
+                    <div class="dp-kpi-card">
+                        <div class="dp-kpi-device">📱 Tablets</div>
+                        <div class="dp-kpi-stats">
+                            <div class="dp-stat green">
+                                <span class="dp-stat-v" id="k-t-con">—</span>
+                                <span class="dp-stat-l">Con garantía</span>
+                            </div>
+                            <div class="dp-stat red">
+                                <span class="dp-stat-v" id="k-t-sin">—</span>
+                                <span class="dp-stat-l">Sin garantía</span>
+                            </div>
+                            <div class="dp-stat orange">
+                                <span class="dp-stat-v" id="k-t-dep">—</span>
+                                <span class="dp-stat-l">Depreciadas</span>
+                            </div>
+                            <div class="dp-stat blue">
+                                <span class="dp-stat-v" id="k-t-stk">—</span>
+                                <span class="dp-stat-l">En stock</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hand Held -->
+                    <div class="dp-kpi-card">
+                        <div class="dp-kpi-device">📟 Hand Held</div>
+                        <div class="dp-kpi-stats">
+                            <div class="dp-stat green">
+                                <span class="dp-stat-v" id="k-hh-con">—</span>
+                                <span class="dp-stat-l">Con garantía</span>
+                            </div>
+                            <div class="dp-stat red">
+                                <span class="dp-stat-v" id="k-hh-sin">—</span>
+                                <span class="dp-stat-l">Sin garantía</span>
+                            </div>
+                            <div class="dp-stat orange">
+                                <span class="dp-stat-v" id="k-hh-dep">—</span>
+                                <span class="dp-stat-l">Depreciados</span>
+                            </div>
+                            <div class="dp-stat blue">
+                                <span class="dp-stat-v" id="k-hh-stk">—</span>
+                                <span class="dp-stat-l">En stock</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Impresoras -->
+                    <div class="dp-kpi-card">
+                        <div class="dp-kpi-device">🖨️ Impresoras</div>
+                        <div class="dp-kpi-stats">
+                            <div class="dp-stat green">
+                                <span class="dp-stat-v" id="k-imp-con">—</span>
+                                <span class="dp-stat-l">Con garantía</span>
+                            </div>
+                            <div class="dp-stat red">
+                                <span class="dp-stat-v" id="k-imp-sin">—</span>
+                                <span class="dp-stat-l">Sin garantía</span>
+                            </div>
+                            <div class="dp-stat orange">
+                                <span class="dp-stat-v" id="k-imp-dep">—</span>
+                                <span class="dp-stat-l">Depreciadas</span>
+                            </div>
+                            <div class="dp-stat blue">
+                                <span class="dp-stat-v" id="k-imp-stk">—</span>
+                                <span class="dp-stat-l">En stock</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SI -->
+                    <div class="dp-kpi-card dp-kpi-si">
+                        <div class="dp-kpi-device" style="color:var(--brand2);">🔄 SI Reposición</div>
+                        <div class="dp-si-big" id="dp-si-folio"
+                            style="font-size:1.8rem; padding:16px 0; word-break: break-all;">—</div>
+                        <div class="dp-si-statuses" style="align-items: center; justify-content: center; flex: 1;">
+                            <div class="dp-si-st" id="dp-si-badge"
+                                style="font-size:.85rem; padding:8px 16px; border: 1px solid var(--border);">
+                                <span class="si-st-dot" id="dp-si-dot" style="display:none;"></span>
+                                <span id="dp-si-status-text">—</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ── CHARTS ── -->
+            <div class="dp-charts-section">
+                <!-- Donut Garantías -->
+                <div class="dp-chart-box">
+                    <div class="dp-chart-title">Garantías por tipo</div>
+                    <div class="dp-chart-wrap">
+                        <canvas id="chart-garantias"></canvas>
+                    </div>
+                </div>
+                <!-- Donut Conectividad -->
+                <div class="dp-chart-box">
+                    <div class="dp-chart-title">Conectividad total de dispositivos</div>
+                    <div class="dp-chart-wrap">
+                        <canvas id="chart-connectivity-donut"></canvas>
+                    </div>
+                </div>
+                <!-- Barras por tipo -->
+                <div class="dp-chart-box">
+                    <div class="dp-chart-title">Conexión por tipo</div>
+                    <div class="dp-chart-wrap-bar">
+                        <canvas id="chart-by-type"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── CONNECTIVITY ── -->
+            <div class="dp-connectivity-section">
+                <div class="dp-section-label">
+                    Conectividad <span class="dp-section-sublabel" id="dp-csv-rows-label"></span>
+                </div>
+                <div class="dp-conn-cards">
+
+                    <!-- Online -->
+                    <div class="dp-conn-card dp-conn-green">
+                        <div class="dp-conn-status">
+                            <span class="dp-conn-dot"></span>
+                            <span class="dp-conn-status-label">Online</span>
+                            <span class="dp-conn-time-hint">≤ 1 día</span>
+                        </div>
+                        <div class="dp-conn-big" id="conn-online-n">0</div>
+                        <div class="dp-conn-breakdown">
+                            <div class="dp-conn-type">
+                                <span class="dp-conn-type-icon">📟</span>
+                                <span class="dp-conn-type-label">Hand Held</span>
+                                <span class="dp-conn-type-val" id="conn-online-hh">0</span>
+                            </div>
+                            <div class="dp-conn-type">
+                                <span class="dp-conn-type-icon">📱</span>
+                                <span class="dp-conn-type-label">Tablet</span>
+                                <span class="dp-conn-type-val" id="conn-online-t">0</span>
+                            </div>
+                            <div class="dp-conn-type dp-conn-other-row" id="conn-online-other-row">
+                                <span class="dp-conn-type-icon">📦</span>
+                                <span class="dp-conn-type-label">Otro</span>
+                                <span class="dp-conn-type-val" id="conn-online-other">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advertencia -->
+                    <div class="dp-conn-card dp-conn-yellow">
+                        <div class="dp-conn-status">
+                            <span class="dp-conn-dot"></span>
+                            <span class="dp-conn-status-label">Advertencia</span>
+                            <span class="dp-conn-time-hint">2–3 días</span>
+                        </div>
+                        <div class="dp-conn-big" id="conn-warn-n">0</div>
+                        <div class="dp-conn-breakdown">
+                            <div class="dp-conn-type">
+                                <span class="dp-conn-type-icon">📟</span>
+                                <span class="dp-conn-type-label">Hand Held</span>
+                                <span class="dp-conn-type-val" id="conn-warn-hh">0</span>
+                            </div>
+                            <div class="dp-conn-type">
+                                <span class="dp-conn-type-icon">📱</span>
+                                <span class="dp-conn-type-label">Tablet</span>
+                                <span class="dp-conn-type-val" id="conn-warn-t">0</span>
+                            </div>
+                            <div class="dp-conn-type dp-conn-other-row" id="conn-warn-other-row">
+                                <span class="dp-conn-type-icon">📦</span>
+                                <span class="dp-conn-type-label">Otro</span>
+                                <span class="dp-conn-type-val" id="conn-warn-other">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Offline -->
+                    <div class="dp-conn-card dp-conn-red">
+                        <div class="dp-conn-status">
+                            <span class="dp-conn-dot"></span>
+                            <span class="dp-conn-status-label">Offline</span>
+                            <span class="dp-conn-time-hint">&gt; 3 días</span>
+                        </div>
+                        <div class="dp-conn-big" id="conn-off-n">0</div>
+                        <div class="dp-conn-breakdown">
+                            <div class="dp-conn-type">
+                                <span class="dp-conn-type-icon">📟</span>
+                                <span class="dp-conn-type-label">Hand Held</span>
+                                <span class="dp-conn-type-val" id="conn-off-hh">0</span>
+                            </div>
+                            <div class="dp-conn-type">
+                                <span class="dp-conn-type-icon">📱</span>
+                                <span class="dp-conn-type-label">Tablet</span>
+                                <span class="dp-conn-type-val" id="conn-off-t">0</span>
+                            </div>
+                            <div class="dp-conn-type dp-conn-other-row" id="conn-off-other-row">
+                                <span class="dp-conn-type-icon">📦</span>
+                                <span class="dp-conn-type-label">Otro</span>
+                                <span class="dp-conn-type-val" id="conn-off-other">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mini donut -->
+                    <div class="dp-conn-chart-box">
+                        <div class="dp-chart-title">% Estatus</div>
+                        <div class="dp-conn-chart-wrap">
+                            <canvas id="chart-conn-mini"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="dp-footer">
+                <span class="dp-footer-brand">
+                    🏪 OXXO Plaza CD. Valles · Tamaulipas &nbsp;|&nbsp; Dashboard Movilidad
+                </span>
+                <span class="dp-footer-date" id="dp-footer-date">—</span>
+            </div>
+
+        </div><!-- end .dashboard-page -->
+    </div><!-- end #dash-view -->
+
+    <!-- Export loading overlay -->
+    <div class="export-loading" id="export-loading">
+        <div class="export-spinner"></div>
+        <p id="export-loading-msg">Generando imagen…</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
