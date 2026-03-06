@@ -45,7 +45,7 @@
                     <div class="fs-desc">Número de tiendas &amp; SI de reposición</div>
                 </div>
             </div>
-            <div class="form-grid col-2" style="padding:16px 18px; background:var(--surface2);">
+            <div class="form-grid col-3" style="padding:16px 18px; background:var(--surface2);">
                 <div class="fg">
                     <label class="fl" for="inp-tiendas">Número de Tiendas</label>
                     <div class="fi-wrap fi-blue">
@@ -53,26 +53,24 @@
                         <input class="fi fi-lg" id="inp-tiendas" type="number" min="0" placeholder="0" />
                     </div>
                 </div>
-                <div class="form-grid col-2" style="padding:0; background:transparent;">
-                    <div class="fg">
-                        <label class="fl" for="inp-si-folio">Folio de SI (Reposición)</label>
-                        <div class="fi-wrap" style="border-left: 3px solid var(--brand2);">
-                            <span class="fi-prefix">#</span>
-                            <input class="fi fi-lg" id="inp-si-folio" type="text" placeholder="Ej. SI-12345"
-                                autocomplete="off" />
-                        </div>
+                <div class="fg">
+                    <label class="fl" for="inp-si-folio">Folio de SI (Reposición)</label>
+                    <div class="fi-wrap" style="border-left: 3px solid var(--brand2);">
+                        <span class="fi-prefix">#</span>
+                        <input class="fi fi-lg" id="inp-si-folio" type="text" placeholder="Ej. SI-12345"
+                            autocomplete="off" />
                     </div>
-                    <div class="fg">
-                        <label class="fl" for="inp-si-estatus">Estatus de la SI</label>
-                        <div class="fi-wrap" style="border-left: 3px solid var(--brand2); padding-left: 10px;">
-                            <select class="fi fi-lg" id="inp-si-estatus" style="cursor: pointer;">
-                                <option value="none">Seleccione estatus...</option>
-                                <option value="auth">🟡 En autorización</option>
-                                <option value="ok">🟢 Autorizada</option>
-                                <option value="wait">🔵 En espera</option>
-                                <option value="recv">🩵 Recibida</option>
-                            </select>
-                        </div>
+                </div>
+                <div class="fg">
+                    <label class="fl" for="inp-si-estatus">Estatus de la SI</label>
+                    <div class="fi-wrap" style="border-left: 3px solid var(--brand2); padding-left: 10px;">
+                        <select class="fi fi-lg" id="inp-si-estatus" style="cursor: pointer;">
+                            <option value="none">Seleccione estatus...</option>
+                            <option value="auth">🟡 En autorización</option>
+                            <option value="ok">🟢 Autorizada</option>
+                            <option value="wait">🔵 En espera</option>
+                            <option value="recv">🩵 Recibida</option>
+                        </select>
                     </div>
                 </div>
             </div>
