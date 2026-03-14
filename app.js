@@ -17,6 +17,14 @@ const dashPage = document.getElementById('dashboard-page');
 const expLoader = document.getElementById('export-loading');
 const expMsg = document.getElementById('export-loading-msg');
 
+/* Factors Critical view elements */
+const factorsView = document.getElementById('factors-view');
+const factorsDashView = document.getElementById('factors-dash-view');
+const btnGenFactors = document.getElementById('btn-generate-factors');
+const btnExpFactorsJpg = document.getElementById('btn-export-factors-jpg');
+const factorsPage = document.getElementById('factors-page');
+
+
 /* CSV elements */
 const dropZone = document.getElementById('csv-drop-zone');
 const fileInput = document.getElementById('csv-file-inp');
@@ -33,6 +41,7 @@ const csvWarning = document.getElementById('csv-warning');
 let csvData = [];           // parsed rows [{lastSeen: Date, username: string, type: 'HH'|'T'|'other'}]
 let csvFileName = '';
 let charts = {};
+let factorsRadarChart = null;
 
 /* ── CSV PARSER ─── */
 /**
@@ -113,6 +122,27 @@ function deviceType(username) {
   if (u.startsWith('T')) return 'T';
   return 'other';
 }
+
+/**
+ * Switch top-level navigation tabs
+ */
+window.switchTab = function(tabName) {
+  const tabs = document.querySelectorAll('.nav-tab');
+  tabs.forEach(t => t.classList.remove('active'));
+
+  dashView.style.display = 'none';
+  factorsDashView.style.display = 'none';
+
+  if (tabName === 'movilidad') {
+    document.getElementById('tab-movilidad').classList.add('active');
+    formView.style.display = 'block';
+    factorsView.style.display = 'none';
+  } else if (tabName === 'factors') {
+    document.getElementById('tab-factors').classList.add('active');
+    formView.style.display = 'none';
+    factorsView.style.display = 'block';
+  }
+};
 
 /**
  * Classify by days offline:
@@ -529,3 +559,140 @@ formFields.forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('input', () => localStorage.setItem('dm_' + id, el.value));
 });
+/**
+ * Logic for Factors Critical Dash
+ */
+function setupFactorsLogic() {
+  if (btnGenFactors) {
+    btnGenFactors.addEventListener('click', generateFactorsOnePage);
+  }
+  if (btnExpFactorsJpg) {
+    btnExpFactorsJpg.addEventListener('click', exportFactorsJPG);
+  }
+}
+
+function generateFactorsOnePage() {
+  const fIds = ['resiliente', 'stp', 'telco', 'rentec', 'nps', 'aiops', 'capitanias'];
+  const data = [];
+  const labels = [
+    'Operación Resiliente', 'Cumplimiento STP', 'Telco Tienda/Oficina',
+    'Renovación (RENTEC)', 'Mejora NPS', 'Eficiencia AIOps', 'Capitanías TI'
+  ];
+
+  let sum = 0;
+  fIds.forEach(id => {
+    const val = parseFloat(document.getElementById(`f-${id}`).value) || 0;
+    data.push(val);
+    sum += val;
+  });
+
+  const avg = (sum / fIds.length).toFixed(1);
+  document.getElementById('f-avg-val').textContent = avg + '%';
+
+  // Dates
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const periodStr = now.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' }).toUpperCase();
+  document.getElementById('f-gen-date-val').textContent = dateStr;
+  document.getElementById('f-period-val').textContent = periodStr;
+  document.getElementById('f-footer-date').textContent = dateStr;
+
+  // Injection Summary Cards
+  const grid = document.getElementById('factors-summary-grid');
+  grid.innerHTML = '';
+  fIds.forEach((id, i) => {
+    const val = data[i];
+    const color = val >= 90 ? '#10b981' : (val >= 80 ? '#f59e0b' : '#ef4444');
+    grid.innerHTML += `
+      <div class="dp-conn-card">
+        <div class="dp-conn-label">${labels[i]}</div>
+        <div class="dp-conn-val" style="color: ${color}">${val}%</div>
+      </div>
+    `;
+  });
+
+  // Top Stats Highlights
+  const topStats = document.getElementById('f-top-stats');
+  const sorted = [...data].map((v, i) => ({ v, l: labels[i] })).sort((a, b) => b.v - a.v);
+  topStats.innerHTML = `
+    <div style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 8px;">
+      <div style="font-size: 11px; color: var(--text-dim);">FORTALEZA CLAVE</div>
+      <div style="font-weight: 700; color: var(--purple);">${sorted[0].l} (${sorted[0].v}%)</div>
+    </div>
+    <div style="background: rgba(239, 68, 68, 0.05); padding: 12px; border-radius: 8px;">
+      <div style="font-size: 11px; color: var(--text-dim);">ÁREA DE OPORTUNIDAD</div>
+      <div style="font-weight: 700; color: #ef4444;">${sorted[sorted.length - 1].l} (${sorted[sorted.length - 1].v}%)</div>
+    </div>
+  `;
+
+  // Radar Chart
+  const ctx = document.getElementById('chart-factors-radar').getContext('2d');
+  if (factorsRadarChart) factorsRadarChart.destroy();
+
+  factorsRadarChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Cumplimiento %',
+        data: data,
+        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+        borderColor: '#8b5cf6',
+        pointBackgroundColor: '#8b5cf6',
+        pointBorderColor: '#fff',
+        borderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          min: 0,
+          max: 100,
+          ticks: { stepSize: 20, display: false },
+          grid: { color: 'rgba(255, 255, 255, 0.1)' },
+          angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+          pointLabels: { color: '#e5e7eb', font: { size: 10 } }
+        }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // Switch View
+  factorsView.style.display = 'none';
+  factorsDashView.style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+window.closeFactorsDash = function() {
+  factorsDashView.style.display = 'none';
+  factorsView.style.display = 'block';
+};
+
+async function exportFactorsJPG() {
+  if (!factorsPage) return;
+  expLoader.style.display = 'flex';
+  expMsg.textContent = 'Generando imagen de Factores Críticos...';
+
+  try {
+    const canvas = await html2canvas(factorsPage, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#0f172a'
+    });
+    const link = document.createElement('a');
+    link.download = `OnePage_Factores_${new Date().toISOString().slice(0, 10)}.jpg`;
+    link.href = canvas.toDataURL('image/jpeg', 0.9);
+    link.click();
+  } catch (err) {
+    console.error('Export failed', err);
+    alert('Error al exportar imagen');
+  } finally {
+    expLoader.style.display = 'none';
+  }
+}
+
+// Initialize Factors logic
+setupFactorsLogic();
