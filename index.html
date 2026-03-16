@@ -293,12 +293,34 @@
             <div class="fs-header">
                 <span class="fs-num">F</span>
                 <div>
-                    <div class="fs-title">Calificaciones del Mes</div>
-                    <div class="fs-desc">Ingrese el porcentaje de cumplimiento (0-100)</div>
+                    <div class="fs-title">Captura de Factores Críticos</div>
+                    <div class="fs-desc" id="factors-subtitle">Seleccione Plaza y Mes para capturar o revisar resultados</div>
                 </div>
             </div>
             
             <div style="padding: 24px;">
+            
+            <!-- Nueva sección de Selectores -->
+            <div class="factors-selectors">
+                <div class="selector-group">
+                    <label for="factors-plaza-select">Plaza:</label>
+                    <select id="factors-plaza-select">
+                        <option value="CD VALLES">CD VALLES</option>
+                        <option value="CD VICTORIA">CD VICTORIA</option>
+                        <option value="MATAMOROS">MATAMOROS</option>
+                        <option value="TAMPICO">TAMPICO</option>
+                        <option value="REGIONAL">REGIONAL (VISTA GLOBAL)</option>
+                    </select>
+                </div>
+                <div class="selector-group">
+                    <label for="factors-month-select">Mes:</label>
+                    <select id="factors-month-select">
+                        <!-- Se llenará dinámicamente con JS -->
+                    </select>
+                </div>
+            </div>
+
+            <div id="factors-form-container">
 
                 <!-- Operación Resiliente -->
                 <div class="factor-card">
@@ -383,7 +405,19 @@
                         <span class="score-pct">%</span>
                     </div>
                 </div>
+            </div><!-- end #factors-form-container -->
+
+            <!-- Contenedor Dashboard Regional (oculto por defecto) -->
+            <div id="factors-regional-view" style="display:none;">
+                <div class="regional-header">
+                    <h3>Comparativa Regional de Factores</h3>
+                    <p>Vista consolidada de cumplimiento para todas las plazas.</p>
+                </div>
+                <div id="regional-content-grid" class="regional-grid">
+                    <!-- Dinámico por JS -->
+                </div>
             </div>
+
         </div>
 
         <!-- Submit -->

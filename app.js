@@ -560,52 +560,219 @@ formFields.forEach(id => {
   if (el) el.addEventListener('input', () => localStorage.setItem('dm_' + id, el.value));
 });
 /**
- * Logic for Factors Critical Dash
+ * Logic for Factors Critical Dash (Multi-Plaza)
  */
+const PLAZAS = ['CD VALLES', 'CD VICTORIA', 'MATAMOROS', 'TAMPICO'];
+const FACTOR_IDS = ['resiliente', 'stp', 'telco', 'rentec', 'nps', 'aiops', 'capitanias'];
+const FACTOR_LABELS = [
+  'Operación Resiliente', 'Cumplimiento STP', 'Telco Tienda/Oficina',
+  'Renovación (RENTEC)', 'Mejora NPS', 'Eficiencia AIOps', 'Capitanías TI'
+];
+
+let multiFactorsData = {}; // { plaza: { yyyy-mm: { id: val } } }
+
 function setupFactorsLogic() {
+  const plazaSelector = document.getElementById('factors-plaza-select');
+  const monthSelector = document.getElementById('factors-month-select');
+  const formContainer = document.getElementById('factors-form-container');
+  const regionalView = document.getElementById('factors-regional-view');
+
+  // 1. Populate Months (current + previous 6)
+  const now = new Date();
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const label = d.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' }).toUpperCase();
+    const opt = document.createElement('option');
+    opt.value = val;
+    opt.textContent = label;
+    monthSelector.appendChild(opt);
+  }
+
+  // 2. Load and Initial State
+  loadMultiFactorsData();
+  
+  // Set defaults from storage if available
+  const savedPlaza = localStorage.getItem('dm_current_plaza') || 'CD VALLES';
+  const savedMonth = localStorage.getItem('dm_current_month') || monthSelector.value;
+  plazaSelector.value = savedPlaza;
+  monthSelector.value = savedMonth;
+
+  // 3. Event Listeners
+  plazaSelector.addEventListener('change', () => {
+    localStorage.setItem('dm_current_plaza', plazaSelector.value);
+    updateFactorsView();
+  });
+  monthSelector.addEventListener('change', () => {
+    localStorage.setItem('dm_current_month', monthSelector.value);
+    updateFactorsView();
+  });
+
+  // Save data on input change
+  FACTOR_IDS.forEach(id => {
+    const el = document.getElementById(`f-${id}`);
+    if (el) {
+      el.addEventListener('input', () => {
+        saveCurrentFactorData();
+      });
+    }
+  });
+
   if (btnGenFactors) {
     btnGenFactors.addEventListener('click', generateFactorsOnePage);
   }
   if (btnExpFactorsJpg) {
     btnExpFactorsJpg.addEventListener('click', exportFactorsJPG);
   }
+
+  // Initial Update
+  updateFactorsView();
+}
+
+function loadMultiFactorsData() {
+  const saved = localStorage.getItem('dm_multi_factors_data');
+  if (saved) {
+    try {
+      multiFactorsData = JSON.parse(saved);
+    } catch (e) {
+      multiFactorsData = {};
+    }
+  }
+}
+
+function saveCurrentFactorData() {
+  const plaza = document.getElementById('factors-plaza-select').value;
+  const month = document.getElementById('factors-month-select').value;
+  if (plaza === 'REGIONAL') return;
+
+  if (!multiFactorsData[plaza]) multiFactorsData[plaza] = {};
+  if (!multiFactorsData[plaza][month]) multiFactorsData[plaza][month] = {};
+
+  FACTOR_IDS.forEach(id => {
+    const el = document.getElementById(`f-${id}`);
+    multiFactorsData[plaza][month][id] = parseFloat(el.value) || 0;
+  });
+
+  localStorage.setItem('dm_multi_factors_data', JSON.stringify(multiFactorsData));
+}
+
+function updateFactorsView() {
+  const plaza = document.getElementById('factors-plaza-select').value;
+  const month = document.getElementById('factors-month-select').value;
+  const formContainer = document.getElementById('factors-form-container');
+  const regionalView = document.getElementById('factors-regional-view');
+  const subtitle = document.getElementById('factors-subtitle');
+
+  if (plaza === 'REGIONAL') {
+    formContainer.style.display = 'none';
+    regionalView.style.display = 'block';
+    subtitle.textContent = 'Panel Consolidado Regional';
+    renderRegionalDashboard(month);
+  } else {
+    formContainer.style.display = 'block';
+    regionalView.style.display = 'none';
+    subtitle.textContent = `Captura de datos para Plaza ${plaza}`;
+    
+    // Fill inputs with saved data
+    const data = (multiFactorsData[plaza] && multiFactorsData[plaza][month]) || {};
+    FACTOR_IDS.forEach(id => {
+      const el = document.getElementById(`f-${id}`);
+      el.value = data[id] !== undefined ? data[id] : '';
+    });
+  }
+}
+
+function renderRegionalDashboard(month) {
+  const grid = document.getElementById('regional-content-grid');
+  grid.innerHTML = '';
+
+  PLAZAS.forEach(plaza => {
+    const currentData = (multiFactorsData[plaza] && multiFactorsData[plaza][month]) || {};
+    
+    // Calculate Trend vs Previous Month
+    const [year, mon] = month.split('-').map(Number);
+    const prevDate = new Date(year, mon - 2, 1);
+    const prevMonthStr = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`;
+    const prevData = (multiFactorsData[plaza] && multiFactorsData[plaza][prevMonthStr]) || {};
+
+    let currentAvg = 0;
+    let prevAvg = 0;
+    FACTOR_IDS.forEach(id => {
+      currentAvg += (currentData[id] || 0);
+      prevAvg += (prevData[id] || 0);
+    });
+    currentAvg /= FACTOR_IDS.length;
+    prevAvg /= FACTOR_IDS.length;
+
+    let trendClass = 'trend-equal';
+    let trendIcon = '●';
+    if (currentAvg > prevAvg + 0.1) { trendClass = 'trend-up'; trendIcon = '▲'; }
+    else if (currentAvg < prevAvg - 0.1) { trendClass = 'trend-down'; trendIcon = '▼'; }
+
+    const card = document.createElement('div');
+    card.className = 'reg-plaza-card';
+    card.innerHTML = `
+      <div class="reg-plaza-title">
+        <span>${plaza}</span>
+        <span class="reg-trend-badge ${trendClass}">${trendIcon} ${currentAvg.toFixed(1)}%</span>
+      </div>
+      <div class="reg-factors-list">
+        ${FACTOR_IDS.map((id, idx) => {
+          const val = currentData[id] || 0;
+          return `
+            <div class="reg-factor-item">
+              <span class="reg-factor-name">${FACTOR_LABELS[idx]}</span>
+              <span class="reg-factor-score">${val}%</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
 }
 
 function generateFactorsOnePage() {
-  const fIds = ['resiliente', 'stp', 'telco', 'rentec', 'nps', 'aiops', 'capitanias'];
-  const data = [];
-  const labels = [
-    'Operación Resiliente', 'Cumplimiento STP', 'Telco Tienda/Oficina',
-    'Renovación (RENTEC)', 'Mejora NPS', 'Eficiencia AIOps', 'Capitanías TI'
-  ];
+  const plaza = document.getElementById('factors-plaza-select').value;
+  const month = document.getElementById('factors-month-select').value;
+  
+  if (plaza === 'REGIONAL') {
+    alert('Seleccione una plaza específica para generar el reporte individual OnePage.');
+    return;
+  }
 
+  const currentData = (multiFactorsData[plaza] && multiFactorsData[plaza][month]) || {};
+  const data = FACTOR_IDS.map(id => currentData[id] || 0);
+  
   let sum = 0;
-  fIds.forEach(id => {
-    const val = parseFloat(document.getElementById(`f-${id}`).value) || 0;
-    data.push(val);
-    sum += val;
-  });
-
-  const avg = (sum / fIds.length).toFixed(1);
+  data.forEach(v => sum += v);
+  const avg = (sum / FACTOR_IDS.length).toFixed(1);
+  
   document.getElementById('f-avg-val').textContent = avg + '%';
 
-  // Dates
+  // Header Info
+  const [year, mon] = month.split('-').map(Number);
+  const d = new Date(year, mon - 1, 1);
+  const periodStr = d.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' }).toUpperCase();
+  
+  document.getElementById('f-period-val').textContent = periodStr;
+  document.getElementById('f-avg-label').textContent = `Promedio Plaza ${plaza}`;
+  
+  // Footer Date
   const now = new Date();
   const dateStr = now.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  const periodStr = now.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' }).toUpperCase();
   document.getElementById('f-gen-date-val').textContent = dateStr;
-  document.getElementById('f-period-val').textContent = periodStr;
   document.getElementById('f-footer-date').textContent = dateStr;
 
   // Injection Summary Cards
   const grid = document.getElementById('factors-summary-grid');
   grid.innerHTML = '';
-  fIds.forEach((id, i) => {
+  FACTOR_IDS.forEach((id, i) => {
     const val = data[i];
     const color = val >= 90 ? '#10b981' : (val >= 80 ? '#f59e0b' : '#ef4444');
     grid.innerHTML += `
       <div class="dp-conn-card">
-        <div class="dp-conn-label">${labels[i]}</div>
+        <div class="dp-conn-label">${FACTOR_LABELS[i]}</div>
         <div class="dp-conn-val" style="color: ${color}">${val}%</div>
       </div>
     `;
@@ -613,7 +780,7 @@ function generateFactorsOnePage() {
 
   // Top Stats Highlights
   const topStats = document.getElementById('f-top-stats');
-  const sorted = [...data].map((v, i) => ({ v, l: labels[i] })).sort((a, b) => b.v - a.v);
+  const sorted = [...data].map((v, i) => ({ v, l: FACTOR_LABELS[i] })).sort((a, b) => b.v - a.v);
   topStats.innerHTML = `
     <div style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 8px;">
       <div style="font-size: 11px; color: var(--text-dim);">FORTALEZA CLAVE</div>
@@ -632,7 +799,7 @@ function generateFactorsOnePage() {
   factorsRadarChart = new Chart(ctx, {
     type: 'radar',
     data: {
-      labels: labels,
+      labels: FACTOR_LABELS,
       datasets: [{
         label: 'Cumplimiento %',
         data: data,
@@ -683,7 +850,9 @@ async function exportFactorsJPG() {
       backgroundColor: '#0f172a'
     });
     const link = document.createElement('a');
-    link.download = `OnePage_Factores_${new Date().toISOString().slice(0, 10)}.jpg`;
+    const plaza = document.getElementById('factors-plaza-select').value;
+    const month = document.getElementById('factors-month-select').value;
+    link.download = `OnePage_Factores_${plaza}_${month}.jpg`;
     link.href = canvas.toDataURL('image/jpeg', 0.9);
     link.click();
   } catch (err) {
@@ -696,3 +865,4 @@ async function exportFactorsJPG() {
 
 // Initialize Factors logic
 setupFactorsLogic();
+
