@@ -1275,22 +1275,176 @@ select.fi {
 }
 
 /* --- Factors Specific --- */
-.factor-card {
-  display: grid;
-  grid-template-columns: 1fr 120px;
-  align-items: center;
-  gap: 20px;
-  padding: 20px !important;
+.factor-group {
   background: var(--surface2);
   border-radius: var(--r);
   border: 1px solid var(--border);
-  margin-bottom: 12px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
 }
 
-.factor-info {
+.factor-group-header {
+  padding: 15px 20px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.factor-header-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.info-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--brand);
+  background: transparent;
+  color: var(--brand);
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+  padding: 0;
+  line-height: 1;
+}
+
+.info-btn:hover {
+  background: var(--brand);
+  color: white;
+  transform: scale(1.1);
+}
+
+.factor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.modal-content {
+  background: var(--surface);
+  width: 95%;
+  max-width: 600px;
+  max-height: 85vh;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+  transform: translateY(0);
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--brand);
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--t3);
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: var(--t1);
+}
+
+.modal-body {
+  padding: 25px;
+  overflow-y: auto;
+  line-height: 1.6;
+  color: var(--t2);
+}
+
+.modal-body b {
+  color: var(--t1);
+}
+
+.modal-body ul {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.modal-body li {
+  margin-bottom: 8px;
+}
+
+.plaza-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 10px 15px;
+  background: var(--surface);
+  border-radius: var(--r-s);
+  border: 1px solid var(--border);
+  transition: transform .2s, border-color .2s;
+}
+
+.plaza-row:hover {
+  border-color: var(--brand);
+  transform: translateY(-2px);
+}
+
+.plaza-name {
+  font-weight: 600;
+  font-size: .85rem;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: .03em;
 }
 
 .factor-name {
@@ -1301,9 +1455,10 @@ select.fi {
 
 .factor-tag {
   font-size: .7rem;
-  color: var(--t3);
+  color: var(--brand);
   text-transform: uppercase;
   letter-spacing: .05em;
+  font-weight: 600;
 }
 
 .score-input-wrap {
@@ -1331,11 +1486,39 @@ select.fi {
   background: #fff;
 }
 
-.score-pct {
-  position: absolute;
-  right: -25px;
+.score-input:disabled {
+  background: var(--surface2);
+  border-color: var(--border);
+  color: var(--t3);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.na-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--t3);
+  background: var(--surface2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+
+.na-toggle:hover {
+  border-color: var(--brand);
+  color: var(--t2);
+}
+
+.na-toggle input {
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
 }
 
 /* --- Factors Dashboard --- */

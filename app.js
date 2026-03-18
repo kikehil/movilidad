@@ -569,13 +569,160 @@ const FACTOR_LABELS = [
   'Renovación (RENTEC)', 'Mejora NPS', 'Eficiencia AIOps', 'Capitanías TI'
 ];
 
+const PLAZA_SUFFIXES = {
+  'CD VALLES': 'valles',
+  'CD VICTORIA': 'victoria',
+  'MATAMOROS': 'matamoros',
+  'TAMPICO': 'tampico'
+};
+
 let multiFactorsData = {}; // { plaza: { yyyy-mm: { id: val } } }
+
+const INDICATOR_DETAILS = {
+  'resiliente': {
+    title: 'Operación Resiliente',
+    desc: 'Evolucionar e implementar mejores prácticas, procesos y procedimientos para la estabilidad de servicios en tienda.',
+    metrics: [
+      'SLA ATI: 20%',
+      'SLA PFS: 35%',
+      'Optimización Tiempo Cierre Tickets: 15%',
+      'Eficiencia en resultado de auditoría de AF vs AA: 10%',
+      '% Cumplimiento Mttos Preventivos Tienda: 20%'
+    ],
+    goals: [
+      'Mejora SLA vs AA',
+      'Mejora Tiempo de Atención de Tickets vs AA',
+      'Plaza sin Backlog (5 días mes anterior) en cat crítica y alta'
+    ]
+  },
+  'stp': {
+    title: 'Cumplimiento STP',
+    desc: 'Asegurar basado en el cumplimiento de los puntos del STP la salud de los procesos internos de TI de la Plaza.',
+    metrics: [
+      'Calificación promedio de las 3 autoverificaciones y 1 verificación funcional: 100%'
+    ],
+    goals: [
+      'Consciencia del espiritu del STP y su beneficio',
+      'Propuestas de cambio a Hoja de Control',
+      'Compartir buenas prácticas con otras plazas'
+    ]
+  },
+  'telco': {
+    title: 'Telco Tienda/Oficina',
+    desc: 'Salud de conectividad de tiendas, aseguramiento de disponibilidad de enlaces y equipos para la operación.',
+    metrics: [
+      'Disponibilidad total enlace tiendas: 30% (Obj: 99% - 100%)',
+      'Disp. comunicación en tienda (switch y AP): 30% (Obj: 99% - 100%)',
+      'Tiendas operativas redundancias: 10% (Obj: 99%)',
+      'Mejora de infraest. en tienda actual: 10% (Obj: 100%)',
+      '% De Cumplimiento Plan de Eficiencias de Telco: 20%'
+    ],
+    goals: [
+      'Disponibilidad real de enlaces',
+      'Disponibilidad de AP y Switches'
+    ]
+  },
+  'rentec': {
+    title: 'Renovación tecnológica (RENTEC)',
+    desc: 'Garantizar una actualización constante y eficaz de nuestros activos tecnológicos.',
+    metrics: [
+      '% Apego a PRT 2026 (Tienda, Telco, Cómputo, CCTV, Telefonía, Oficinas): 100%'
+    ],
+    goals: [
+      'Ejecución de Estrategias para cumplimiento del ciclo al 100%',
+      'Desincorporación y entrega de formato hacia Activo Fijo',
+      'Cartas de Recepción de Usuario',
+      'Asegurar el proceso de plaqueo'
+    ]
+  },
+  'nps': {
+    title: 'Mejora NPS',
+    desc: 'Mejorar la experiencia del cliente interno y externo enfocada en temas de Frictionless y servicio.',
+    metrics: [
+      'Índice resultado de las encuestas realizadas a clientes y colaboradores',
+      'Ejecución de Plan de Mejora'
+    ],
+    goals: [
+      'NPS igual o mayor al año anterior',
+      'Ejecución Plan Plaza Homologado de buenas prácticas'
+    ]
+  },
+  'aiops': {
+    title: 'Eficiencia/Productividad AIOps',
+    desc: 'Optimización de gente, procesos y tecnología para ser la TI más confiable y rentable.',
+    metrics: [
+      'Rentec Movilidad y Telefonía ($), plan de trabajo y eficiencia: 30%',
+      'Apego a las claves contables de TI: 30%',
+      'Generación e Implantación de automatizaciones/IA: 40% (Obj: 10% eficiencia)'
+    ],
+    goals: [
+      'Facturacion de tickets de Excedentes a PFS',
+      'Iniciativas locales que abonen a la baja de incidencias',
+      'Optimización de Tiempo en Cierre de Tickets',
+      'Iniciativas de productividad en hrs/hombre o $'
+    ]
+  },
+  'capitanias': {
+    title: 'Capitanías TI',
+    desc: 'Seguimiento a las capitanías de cada Asesor TI de temas diversos de la Región y Plaza.',
+    metrics: [
+      'Resultado de la capitanía anual: 100%'
+    ],
+    goals: [
+      'Estrategia General',
+      'Sesiones de Seguimiento',
+      'Plan de Trabajo',
+      'Resultado Final'
+    ]
+  }
+};
+
+function showIndicatorDetail(id) {
+  const info = INDICATOR_DETAILS[id];
+  if (!info) return;
+
+  document.getElementById('modal-title').textContent = info.title;
+  
+  let html = `
+    <p><b>Descripción:</b><br>${info.desc}</p>
+    <p><b>Métricas y Objetivos:</b></p>
+    <ul>
+      ${info.metrics.map(m => `<li>${m}</li>`).join('')}
+    </ul>
+    <p><b>Estrategias Clave:</b></p>
+    <ul>
+      ${info.goals.map(g => `<li>${g}</li>`).join('')}
+    </ul>
+  `;
+  
+  document.getElementById('modal-body').innerHTML = html;
+  
+  const modal = document.getElementById('factor-modal');
+  modal.classList.add('active');
+}
+
+function hideFactorModal() {
+  const modal = document.getElementById('factor-modal');
+  modal.classList.remove('active');
+}
 
 function setupFactorsLogic() {
   const plazaSelector = document.getElementById('factors-plaza-select');
   const monthSelector = document.getElementById('factors-month-select');
   const formContainer = document.getElementById('factors-form-container');
   const regionalView = document.getElementById('factors-regional-view');
+  
+  const modalClose = document.getElementById('modal-close');
+  const modalOverlay = document.getElementById('factor-modal');
+
+  if (modalClose) {
+    modalClose.addEventListener('click', hideFactorModal);
+  }
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) hideFactorModal();
+    });
+  }
 
   // 1. Populate Months (current + previous 6)
   const now = new Date();
@@ -608,14 +755,30 @@ function setupFactorsLogic() {
     updateFactorsView();
   });
 
-  // Save data on input change
-  FACTOR_IDS.forEach(id => {
-    const el = document.getElementById(`f-${id}`);
-    if (el) {
-      el.addEventListener('input', () => {
-        saveCurrentFactorData();
-      });
-    }
+  // Save data on any input change in the grid
+  PLAZAS.forEach(plaza => {
+    const suffix = PLAZA_SUFFIXES[plaza];
+    FACTOR_IDS.forEach(fid => {
+      const inputEl = document.getElementById(`f-${fid}-${suffix}`);
+      const naEl = document.getElementById(`na-${fid}-${suffix}`);
+      
+      if (inputEl) {
+        inputEl.addEventListener('input', () => {
+          saveCurrentFactorData();
+        });
+      }
+      
+      if (naEl) {
+        naEl.addEventListener('change', () => {
+          if (naEl.checked) {
+            inputEl.disabled = true;
+          } else {
+            inputEl.disabled = false;
+          }
+          saveCurrentFactorData();
+        });
+      }
+    });
   });
 
   if (btnGenFactors) {
@@ -641,29 +804,39 @@ function loadMultiFactorsData() {
 }
 
 function saveCurrentFactorData() {
-  const plaza = document.getElementById('factors-plaza-select').value;
   const month = document.getElementById('factors-month-select').value;
-  if (plaza === 'REGIONAL') return;
+  
+  PLAZAS.forEach(plaza => {
+    if (!multiFactorsData[plaza]) multiFactorsData[plaza] = {};
+    if (!multiFactorsData[plaza][month]) multiFactorsData[plaza][month] = {};
 
-  if (!multiFactorsData[plaza]) multiFactorsData[plaza] = {};
-  if (!multiFactorsData[plaza][month]) multiFactorsData[plaza][month] = {};
-
-  FACTOR_IDS.forEach(id => {
-    const el = document.getElementById(`f-${id}`);
-    multiFactorsData[plaza][month][id] = parseFloat(el.value) || 0;
+    const suffix = PLAZA_SUFFIXES[plaza];
+    FACTOR_IDS.forEach(fid => {
+      const inputEl = document.getElementById(`f-${fid}-${suffix}`);
+      const naEl = document.getElementById(`na-${fid}-${suffix}`);
+      
+      if (naEl && naEl.checked) {
+        multiFactorsData[plaza][month][fid] = null; // N/A status
+      } else if (inputEl) {
+        multiFactorsData[plaza][month][fid] = parseFloat(inputEl.value) || 0;
+      }
+    });
   });
 
   localStorage.setItem('dm_multi_factors_data', JSON.stringify(multiFactorsData));
+  
+  // Update live preview after saving
+  refreshFactorsPreview();
 }
 
 function updateFactorsView() {
-  const plaza = document.getElementById('factors-plaza-select').value;
+  const plazaSelect = document.getElementById('factors-plaza-select').value;
   const month = document.getElementById('factors-month-select').value;
   const formContainer = document.getElementById('factors-form-container');
   const regionalView = document.getElementById('factors-regional-view');
   const subtitle = document.getElementById('factors-subtitle');
 
-  if (plaza === 'REGIONAL') {
+  if (plazaSelect === 'REGIONAL') {
     formContainer.style.display = 'none';
     regionalView.style.display = 'block';
     subtitle.textContent = 'Panel Consolidado Regional';
@@ -671,14 +844,34 @@ function updateFactorsView() {
   } else {
     formContainer.style.display = 'block';
     regionalView.style.display = 'none';
-    subtitle.textContent = `Captura de datos para Plaza ${plaza}`;
+    subtitle.textContent = `Captura Multiplaza - Mes: ${month}`;
     
-    // Fill inputs with saved data
-    const data = (multiFactorsData[plaza] && multiFactorsData[plaza][month]) || {};
-    FACTOR_IDS.forEach(id => {
-      const el = document.getElementById(`f-${id}`);
-      el.value = data[id] !== undefined ? data[id] : '';
+    // Fill all inputs in the grid
+    PLAZAS.forEach(plaza => {
+      const suffix = PLAZA_SUFFIXES[plaza];
+      const data = (multiFactorsData[plaza] && multiFactorsData[plaza][month]) || {};
+      FACTOR_IDS.forEach(fid => {
+        const inputEl = document.getElementById(`f-${fid}-${suffix}`);
+        const naEl = document.getElementById(`na-${fid}-${suffix}`);
+        
+        if (inputEl) {
+          const val = data[fid];
+          if (val === null) {
+            inputEl.value = '';
+            inputEl.disabled = true;
+            if (naEl) naEl.checked = true;
+          } else {
+            inputEl.value = val !== undefined ? val : '';
+            inputEl.disabled = false;
+            if (naEl) naEl.checked = false;
+          }
+        }
+      });
     });
+
+    // Also update the radar and summary for the *selected* plaza in the dropdown
+    // so the live preview below the grid shows the currently selected plaza's state
+    refreshFactorsPreview(); 
   }
 }
 
@@ -695,14 +888,27 @@ function renderRegionalDashboard(month) {
     const prevMonthStr = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`;
     const prevData = (multiFactorsData[plaza] && multiFactorsData[plaza][prevMonthStr]) || {};
 
-    let currentAvg = 0;
-    let prevAvg = 0;
+    let currentSum = 0;
+    let currentCount = 0;
+    let prevSum = 0;
+    let prevCount = 0;
+
     FACTOR_IDS.forEach(id => {
-      currentAvg += (currentData[id] || 0);
-      prevAvg += (prevData[id] || 0);
+      const cVal = currentData[id];
+      const pVal = prevData[id];
+      
+      if (cVal !== null && cVal !== undefined) {
+        currentSum += cVal;
+        currentCount++;
+      }
+      if (pVal !== null && pVal !== undefined) {
+        prevSum += pVal;
+        prevCount++;
+      }
     });
-    currentAvg /= FACTOR_IDS.length;
-    prevAvg /= FACTOR_IDS.length;
+
+    let currentAvg = currentCount > 0 ? currentSum / currentCount : 0;
+    let prevAvg = prevCount > 0 ? prevSum / prevCount : 0;
 
     let trendClass = 'trend-equal';
     let trendIcon = '●';
@@ -722,7 +928,7 @@ function renderRegionalDashboard(month) {
           return `
             <div class="reg-factor-item">
               <span class="reg-factor-name">${FACTOR_LABELS[idx]}</span>
-              <span class="reg-factor-score">${val}%</span>
+              <span class="reg-factor-score">${val === null ? 'N/A' : val + '%'}</span>
             </div>
           `;
         }).join('')}
@@ -732,21 +938,32 @@ function renderRegionalDashboard(month) {
   });
 }
 
-function generateFactorsOnePage() {
+function refreshFactorsPreview() {
   const plaza = document.getElementById('factors-plaza-select').value;
   const month = document.getElementById('factors-month-select').value;
   
-  if (plaza === 'REGIONAL') {
-    alert('Seleccione una plaza específica para generar el reporte individual OnePage.');
-    return;
-  }
+  if (plaza === 'REGIONAL') return;
 
   const currentData = (multiFactorsData[plaza] && multiFactorsData[plaza][month]) || {};
-  const data = FACTOR_IDS.map(id => currentData[id] || 0);
   
-  let sum = 0;
-  data.forEach(v => sum += v);
-  const avg = (sum / FACTOR_IDS.length).toFixed(1);
+  // Handle N/A in data for radar (radar needs numbers, so we treat N/A as 0 for visual, or skip?)
+  // Better: radar skip or show 0. Let's show 0 but adjust the average display.
+  const dataForRadar = FACTOR_IDS.map(id => {
+    const val = currentData[id];
+    return (val === null || val === undefined) ? 0 : val;
+  });
+  
+  let validSum = 0;
+  let validCount = 0;
+  FACTOR_IDS.forEach(id => {
+    const val = currentData[id];
+    if (val !== null && val !== undefined) {
+      validSum += val;
+      validCount++;
+    }
+  });
+  
+  const avg = validCount > 0 ? (validSum / validCount).toFixed(1) : "0.0";
   
   document.getElementById('f-avg-val').textContent = avg + '%';
 
@@ -768,29 +985,42 @@ function generateFactorsOnePage() {
   const grid = document.getElementById('factors-summary-grid');
   grid.innerHTML = '';
   FACTOR_IDS.forEach((id, i) => {
-    const val = data[i];
-    const color = val >= 90 ? '#10b981' : (val >= 80 ? '#f59e0b' : '#ef4444');
+    const rawVal = currentData[id];
+    const isNA = rawVal === null;
+    const val = isNA ? 0 : rawVal || 0;
+    const color = isNA ? 'var(--t3)' : (val >= 90 ? '#10b981' : (val >= 80 ? '#f59e0b' : '#ef4444'));
+    const displayVal = isNA ? 'N/A' : `${val}%`;
+    
     grid.innerHTML += `
       <div class="dp-conn-card">
         <div class="dp-conn-label">${FACTOR_LABELS[i]}</div>
-        <div class="dp-conn-val" style="color: ${color}">${val}%</div>
+        <div class="dp-conn-val" style="color: ${color}">${displayVal}</div>
       </div>
     `;
   });
 
   // Top Stats Highlights
   const topStats = document.getElementById('f-top-stats');
-  const sorted = [...data].map((v, i) => ({ v, l: FACTOR_LABELS[i] })).sort((a, b) => b.v - a.v);
-  topStats.innerHTML = `
-    <div style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 8px;">
-      <div style="font-size: 11px; color: var(--text-dim);">FORTALEZA CLAVE</div>
-      <div style="font-weight: 700; color: var(--purple);">${sorted[0].l} (${sorted[0].v}%)</div>
-    </div>
-    <div style="background: rgba(239, 68, 68, 0.05); padding: 12px; border-radius: 8px;">
-      <div style="font-size: 11px; color: var(--text-dim);">ÁREA DE OPORTUNIDAD</div>
-      <div style="font-weight: 700; color: #ef4444;">${sorted[sorted.length - 1].l} (${sorted[sorted.length - 1].v}%)</div>
-    </div>
-  `;
+  const validFactors = FACTOR_IDS.map((id, i) => ({ 
+    v: currentData[id], 
+    l: FACTOR_LABELS[i] 
+  })).filter(f => f.v !== null && f.v !== undefined);
+
+  if (validFactors.length > 0) {
+    const sorted = [...validFactors].sort((a, b) => b.v - a.v);
+    topStats.innerHTML = `
+      <div style="background: rgba(139, 92, 246, 0.1); padding: 12px; border-radius: 8px;">
+        <div style="font-size: 11px; color: var(--text-dim);">FORTALEZA CLAVE</div>
+        <div style="font-weight: 700; color: var(--purple);">${sorted[0].l} (${sorted[0].v}%)</div>
+      </div>
+      <div style="background: rgba(239, 68, 68, 0.05); padding: 12px; border-radius: 8px;">
+        <div style="font-size: 11px; color: var(--text-dim);">ÁREA DE OPORTUNIDAD</div>
+        <div style="font-weight: 700; color: #ef4444;">${sorted[sorted.length - 1].l} (${sorted[sorted.length - 1].v}%)</div>
+      </div>
+    `;
+  } else {
+    topStats.innerHTML = '<p style="color:var(--t3); font-size:0.8rem; text-align:center; width:100%">Sin datos para mostrar estadísticas.</p>';
+  }
 
   // Radar Chart
   const ctx = document.getElementById('chart-factors-radar').getContext('2d');
@@ -802,7 +1032,7 @@ function generateFactorsOnePage() {
       labels: FACTOR_LABELS,
       datasets: [{
         label: 'Cumplimiento %',
-        data: data,
+        data: dataForRadar,
         backgroundColor: 'rgba(139, 92, 246, 0.2)',
         borderColor: '#8b5cf6',
         pointBackgroundColor: '#8b5cf6',
@@ -826,6 +1056,17 @@ function generateFactorsOnePage() {
       plugins: { legend: { display: false } }
     }
   });
+}
+
+function generateFactorsOnePage() {
+  const plaza = document.getElementById('factors-plaza-select').value;
+  if (plaza === 'REGIONAL') {
+    alert('Seleccione una plaza específica para generar el reporte individual OnePage.');
+    return;
+  }
+
+  // Ensure preview is updated
+  refreshFactorsPreview();
 
   // Switch View
   factorsView.style.display = 'none';

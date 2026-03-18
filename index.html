@@ -289,7 +289,7 @@
             <h1 class="form-headline">Factores Críticos de Éxito</h1>
         </div>
 
-        <div class="form-section">
+        <div class="form-section" id="factors-view">
             <div class="fs-header">
                 <span class="fs-num">F</span>
                 <div>
@@ -303,7 +303,7 @@
             <!-- Nueva sección de Selectores -->
             <div class="factors-selectors">
                 <div class="selector-group">
-                    <label for="factors-plaza-select">Plaza:</label>
+                    <label for="factors-plaza-select">Vista Reporte / Radar:</label>
                     <select id="factors-plaza-select">
                         <option value="CD VALLES">CD VALLES</option>
                         <option value="CD VICTORIA">CD VICTORIA</option>
@@ -323,86 +323,401 @@
             <div id="factors-form-container">
 
                 <!-- Operación Resiliente -->
-                <div class="factor-card">
-                    <div class="factor-info">
-                        <span class="factor-tag">Infraestructura</span>
-                        <span class="factor-name">Operación Resiliente</span>
+                <div class="factor-group">
+                    <div class="factor-group-header">
+                        <div class="factor-header-info">
+                            <span class="factor-tag">Infraestructura</span>
+                            <span class="factor-name">Operación Resiliente</span>
+                        </div>
+                        <button class="info-btn" onclick="showIndicatorDetail('resiliente')">+</button>
                     </div>
-                    <div class="score-input-wrap">
-                        <input type="number" class="score-input" id="f-resiliente" min="0" max="100" placeholder="0">
-                        <span class="score-pct">%</span>
+                    <div class="factor-grid">
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VALLES</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-resiliente-valles" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-resiliente-valles">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VICTORIA</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-resiliente-victoria" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-resiliente-victoria">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">MATAMOROS</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-resiliente-matamoros" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-resiliente-matamoros">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">TAMPICO</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-resiliente-tampico" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-resiliente-tampico">
+                                <span>N/A</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Cumplimiento STP -->
-                <div class="factor-card">
-                    <div class="factor-info">
-                        <span class="factor-tag">Procesos</span>
-                        <span class="factor-name">Cumplimiento STP</span>
+                <div class="factor-group">
+                    <div class="factor-group-header">
+                        <div class="factor-header-info">
+                            <span class="factor-tag">Procesos</span>
+                            <span class="factor-name">Cumplimiento STP</span>
+                        </div>
+                        <button class="info-btn" onclick="showIndicatorDetail('stp')">+</button>
                     </div>
-                    <div class="score-input-wrap">
-                        <input type="number" class="score-input" id="f-stp" min="0" max="100" placeholder="0">
-                        <span class="score-pct">%</span>
+                    <div class="factor-grid">
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VALLES</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-stp-valles" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-stp-valles">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VICTORIA</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-stp-victoria" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-stp-victoria">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">MATAMOROS</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-stp-matamoros" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-stp-matamoros">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">TAMPICO</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-stp-tampico" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-stp-tampico">
+                                <span>N/A</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Telco Tienda/Oficina -->
-                <div class="factor-card">
-                    <div class="factor-info">
-                        <span class="factor-tag">Comunicaciones</span>
-                        <span class="factor-name">Telco Tienda/Oficina (Infraestructura/Comunicación)</span>
+                <div class="factor-group">
+                    <div class="factor-group-header">
+                        <div class="factor-header-info">
+                            <span class="factor-tag">Comunicaciones</span>
+                            <span class="factor-name">Telco Tienda/Oficina (Infraestructura/Comunicación)</span>
+                        </div>
+                        <button class="info-btn" onclick="showIndicatorDetail('telco')">+</button>
                     </div>
-                    <div class="score-input-wrap">
-                        <input type="number" class="score-input" id="f-telco" min="0" max="100" placeholder="0">
-                        <span class="score-pct">%</span>
+                    <div class="factor-grid">
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VALLES</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-telco-valles" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-telco-valles">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VICTORIA</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-telco-victoria" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-telco-victoria">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">MATAMOROS</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-telco-matamoros" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-telco-matamoros">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">TAMPICO</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-telco-tampico" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-telco-tampico">
+                                <span>N/A</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Renovación tecnológica (RENTEC) -->
-                <div class="factor-card">
-                    <div class="factor-info">
-                        <span class="factor-tag">Hardware</span>
-                        <span class="factor-name">Renovación tecnológica (RENTEC)</span>
+                <div class="factor-group">
+                    <div class="factor-group-header">
+                        <div class="factor-header-info">
+                            <span class="factor-tag">Hardware</span>
+                            <span class="factor-name">Renovación tecnológica (RENTEC)</span>
+                        </div>
+                        <button class="info-btn" onclick="showIndicatorDetail('rentec')">+</button>
                     </div>
-                    <div class="score-input-wrap">
-                        <input type="number" class="score-input" id="f-rentec" min="0" max="100" placeholder="0">
-                        <span class="score-pct">%</span>
+                    <div class="factor-grid">
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VALLES</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-rentec-valles" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-rentec-valles">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VICTORIA</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-rentec-victoria" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-rentec-victoria">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">MATAMOROS</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-rentec-matamoros" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-rentec-matamoros">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">TAMPICO</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-rentec-tampico" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-rentec-tampico">
+                                <span>N/A</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Mejora NPS -->
-                <div class="factor-card">
-                    <div class="factor-info">
-                        <span class="factor-tag">Servicio</span>
-                        <span class="factor-name">Mejora NPS</span>
+                <div class="factor-group">
+                    <div class="factor-group-header">
+                        <div class="factor-header-info">
+                            <span class="factor-tag">Servicio</span>
+                            <span class="factor-name">Mejora NPS</span>
+                        </div>
+                        <button class="info-btn" onclick="showIndicatorDetail('nps')">+</button>
                     </div>
-                    <div class="score-input-wrap">
-                        <input type="number" class="score-input" id="f-nps" min="0" max="100" placeholder="0">
-                        <span class="score-pct">%</span>
+                    <div class="factor-grid">
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VALLES</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-nps-valles" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-nps-valles">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VICTORIA</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-nps-victoria" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-nps-victoria">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">MATAMOROS</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-nps-matamoros" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-nps-matamoros">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">TAMPICO</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-nps-tampico" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-nps-tampico">
+                                <span>N/A</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Efficiency/Productivity AIOps -->
-                <div class="factor-card">
-                    <div class="factor-info">
-                        <span class="factor-tag">Automatización</span>
-                        <span class="factor-name">Eficiencia/Productividad AIOps</span>
+                <div class="factor-group">
+                    <div class="factor-group-header">
+                        <div class="factor-header-info">
+                            <span class="factor-tag">Automatización</span>
+                            <span class="factor-name">Eficiencia/Productividad AIOps</span>
+                        </div>
+                        <button class="info-btn" onclick="showIndicatorDetail('aiops')">+</button>
                     </div>
-                    <div class="score-input-wrap">
-                        <input type="number" class="score-input" id="f-aiops" min="0" max="100" placeholder="0">
-                        <span class="score-pct">%</span>
+                    <div class="factor-grid">
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VALLES</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-aiops-valles" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-aiops-valles">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VICTORIA</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-aiops-victoria" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-aiops-victoria">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">MATAMOROS</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-aiops-matamoros" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-aiops-matamoros">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">TAMPICO</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-aiops-tampico" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-aiops-tampico">
+                                <span>N/A</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Capitanías TI -->
-                <div class="factor-card">
-                    <div class="factor-info">
-                        <span class="factor-tag">Liderazgo</span>
-                        <span class="factor-name">Capitanías TI</span>
+                <div class="factor-group">
+                    <div class="factor-group-header">
+                        <div class="factor-header-info">
+                            <span class="factor-tag">Liderazgo</span>
+                            <span class="factor-name">Capitanías TI</span>
+                        </div>
+                        <button class="info-btn" onclick="showIndicatorDetail('capitanias')">+</button>
                     </div>
-                    <div class="score-input-wrap">
-                        <input type="number" class="score-input" id="f-capitanias" min="0" max="100" placeholder="0">
-                        <span class="score-pct">%</span>
+                    <div class="factor-grid">
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VALLES</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-capitanias-valles" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-capitanias-valles">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">CD VICTORIA</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-capitanias-victoria" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-capitanias-victoria">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">MATAMOROS</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-capitanias-matamoros" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-capitanias-matamoros">
+                                <span>N/A</span>
+                            </label>
+                        </div>
+                        <div class="plaza-row">
+                            <span class="plaza-name">TAMPICO</span>
+                            <div class="score-input-wrap">
+                                <input type="number" class="score-input" id="f-capitanias-tampico" min="0" max="100" placeholder="0">
+                                <span class="score-pct">%</span>
+                            </div>
+                            <label class="na-toggle">
+                                <input type="checkbox" id="na-capitanias-tampico">
+                                <span>N/A</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div><!-- end #factors-form-container -->
@@ -830,6 +1145,19 @@
     <div class="export-loading" id="export-loading">
         <div class="export-spinner"></div>
         <p id="export-loading-msg">Generando imagen…</p>
+    </div>
+
+    <!-- Modal for Indicator Details -->
+    <div id="factor-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Detalle del Indicador</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Data will be injected here -->
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
